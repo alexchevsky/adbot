@@ -33,7 +33,6 @@ def process_message(update: Update, context: CallbackContext):
         target=generate_csv, args=(message, chat_id, context))
     thread.start()
 
-    # Send progress messages
     context.bot.send_message(
         chat_id=chat_id, text=f"Составляю объявления для ключевой фразы {message}")
     time.sleep(3)
@@ -49,7 +48,6 @@ def process_message(update: Update, context: CallbackContext):
 
 
 def generate_csv(message, chat_id, context):
-    # Your existing code to call the OpenAI API and generate the CSV
     prompt = """Act as a copywriter and Search Engine Marketing expert. 
     Please compose 20 creatives for the following key phrase: {}.
     Each creative should consist of a header(up to 56 symbols) and a body (up to 75 symbols).
@@ -80,7 +78,6 @@ def generate_csv(message, chat_id, context):
     csv_content = output.getvalue()
     output.close()
 
-    # Create a file and send it back
     context.bot.send_document(chat_id=chat_id, document=io.BytesIO(
         csv_content.encode()), filename='creatives.csv')
 
@@ -89,13 +86,8 @@ start_handler = CommandHandler('start', start)
 message_handler = MessageHandler(
     Filters.text & (~Filters.command), process_message)
 
-# Add handlers
 updater.dispatcher.add_handler(start_handler)
 updater.dispatcher.add_handler(message_handler)
 
-# Start the Bot
 updater.start_polling()
-
-# Run the bot until the user presses Ctrl-C or the process receives SIGINT,
-# SIGTERM or SIGABRT
 updater.idle()
